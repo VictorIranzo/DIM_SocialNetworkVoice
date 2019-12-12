@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+
 using System.Drawing;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using System.Speech.Recognition;
 using System.Speech.Synthesis ;
@@ -27,7 +23,7 @@ namespace REcoSample
         {
             synth.Speak("Inicializando la Aplicación");
 
-           Grammar grammar= CreateGrammarBuilderRGBSemantics2(null);
+           Grammar grammar= CreateGrammar();
             _recognizer.SetInputToDefaultAudioDevice();
             _recognizer.UnloadAllGrammars();
             _recognizer.UpdateRecognizerSetting("CFGConfidenceRejectionThreshold", 60);
@@ -43,27 +39,27 @@ namespace REcoSample
 
         void _recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
-                      //obtenemos un diccionario con los elementos semánticos
-                      SemanticValue semantics = e.Result.Semantics;
-          
-                      string rawText = e.Result.Text;
-                      RecognitionResult result = e.Result;
+            //obtenemos un diccionario con los elementos semánticos
+            SemanticValue semantics = e.Result.Semantics;
 
-                      if (!semantics.ContainsKey("rgb"))
-                      {
-                          this.label1.Text = "No info provided.";
-                      }
-                      else
-                      {
-                          this.label1.Text = rawText;
-                          this.BackColor = Color.FromArgb((int)semantics["rgb"].Value);
-                          Update();
-                          synth.Speak(rawText);
-                      }
+            string rawText = e.Result.Text;
+            RecognitionResult result = e.Result;
+
+            if (!semantics.ContainsKey("rgb"))
+            {
+                this.label1.Text = "No info provided.";
+            }
+            else
+            {
+                this.label1.Text = rawText;
+                this.BackColor = Color.FromArgb((int)semantics["rgb"].Value);
+                Update();
+                synth.Speak(rawText);
+            }
         }
         
       
-        private Grammar CreateGrammarBuilderRGBSemantics2(params int[] info)
+        private Grammar CreateGrammar()
         {
             synth.Speak("Creando ahora la gramática");
             Choices colorChoice = new Choices();
@@ -106,9 +102,6 @@ namespace REcoSample
             Grammar grammar = new Grammar(frase);
             grammar.Name = "Poner/Cambiar Fondo";
             return grammar;
-
-
-       
         }
     }
 }

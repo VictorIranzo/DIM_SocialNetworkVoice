@@ -1,27 +1,36 @@
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-
 namespace REcoSample
 {
+    using REcoSample.Login;
+    using System;
+    using System.Windows.Forms;
+
     static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            IServiceProvider serviceProvider = BuildServiceProvider();
+
             try
             {
-                Application.Run(new Form1());
+                Application.Run(new LoginForm(serviceProvider));
             }
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message + ex.StackTrace);
             }
+        }
+
+        private static IServiceProvider BuildServiceProvider()
+        {
+            IServiceCollection serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddDbContext<AppContext>();
+
+            return serviceCollection.BuildServiceProvider();
         }
     }
 }

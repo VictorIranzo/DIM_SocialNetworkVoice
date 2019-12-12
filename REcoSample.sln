@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REcoSample", "REcoSample.csproj", "{FE80962C-706B-419F-9F44-A4D4AA49E7E9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence", "..\Persistence\Persistence.csproj", "{33881539-6CC9-4F29-80B5-13CA69E91293}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{FE80962C-706B-419F-9F44-A4D4AA49E7E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE80962C-706B-419F-9F44-A4D4AA49E7E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE80962C-706B-419F-9F44-A4D4AA49E7E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33881539-6CC9-4F29-80B5-13CA69E91293}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33881539-6CC9-4F29-80B5-13CA69E91293}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33881539-6CC9-4F29-80B5-13CA69E91293}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33881539-6CC9-4F29-80B5-13CA69E91293}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
