@@ -1,5 +1,6 @@
 namespace REcoSample
 {
+    using Microsoft.Extensions.DependencyInjection;
     using REcoSample.Login;
     using System;
     using System.Windows.Forms;
