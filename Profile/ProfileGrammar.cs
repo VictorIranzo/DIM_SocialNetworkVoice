@@ -118,5 +118,23 @@
 
             return alternativesNavigate;
         }
+
+        private GrammarBuilder CreateAddCommentGrammar()
+        {
+            GrammarBuilder write = "Escribir";
+            GrammarBuilder add = "Añadir";
+            GrammarBuilder dictate = "Dictar";
+
+            Choices alternativesNavigate = new Choices(write, add, dictate);
+
+            GrammarBuilder sentence = new GrammarBuilder(alternativesNavigate);
+
+            GrammarBuilder comment = "comentario";
+            sentence.Append(comment);
+
+            sentence.AppendDictation();
+
+            return alternativesNavigate;
+        }
     }
 }

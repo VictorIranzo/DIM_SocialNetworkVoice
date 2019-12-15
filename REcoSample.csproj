@@ -239,7 +239,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Persistence\Persistence.csproj">
+    <ProjectReference Include="Persistence\Persistence.csproj">
       <Project>{33881539-6cc9-4f29-80b5-13ca69e91293}</Project>
       <Name>Persistence</Name>
     </ProjectReference>
