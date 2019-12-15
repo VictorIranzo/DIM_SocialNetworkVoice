@@ -24,7 +24,7 @@
 
             using (PersistenceContext context = this.serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>())
             {
-                user = context.Users.Include(u => u.Posts).FirstOrDefault(u => u.Mail == userTextBox.Text && u.Password == passwordTextBox.Text);
+                user = context.Users.Include(u => u.OwnerPosts).FirstOrDefault(u => u.Mail == userTextBox.Text && u.Password == passwordTextBox.Text);
             }
 
             if (user == null)

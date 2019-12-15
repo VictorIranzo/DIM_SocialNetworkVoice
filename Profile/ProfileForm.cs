@@ -78,27 +78,27 @@
             this.postsListView.View = View.Details;
             this.postsListView.SmallImageList = new ImageList();
             this.postsListView.SmallImageList.ImageSize = new Size(50,50);
-            this.postsListView.Columns.Add(text: "Comentario", width: 500);
+            this.postsListView.Columns.Add(text: "Comentarios", width: 500);
 
-            if (this.currentUser.Posts == null || !this.currentUser.Posts.Any())
+            if (this.currentUser.OwnerPosts == null || !this.currentUser.OwnerPosts.Any())
             {
                 return;
             }
 
             using (PersistenceContext context = this.serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>())
             {
-                foreach (Post post in context.Users.Include(u => u.Posts).FirstOrDefault(u => u.Id == this.currentUser.Id).Posts.OrderByDescending(p => p.DateTime))
+                foreach (Post post in context.Posts.Include(p => p.WriterUser).Where(p => p.OwnerUserId == this.currentUser.Id).OrderByDescending(p => p.DateTime))
                 {
-                    ListViewGroup group = new ListViewGroup(header: $"{post.DateTime.ToShortDateString()} {post.DateTime.ToShortTimeString()}: {post.Writer} escribió:");
-
-                    Bitmap userPhoto = GetBitMapOfUserPhoto(post.User);
-                    Image userImage = userPhoto.GetThumbnailImage(50, 50, new Image.GetThumbnailImageAbort(() => false), IntPtr.Zero);
+                    ListViewGroup group = new ListViewGroup(header: $"{post.DateTime.ToShortDateString()} {post.DateTime.ToShortTimeString()}: {post.WriterUser.Name} escribió:");
 
                     // Aquí es la foto de quién lo escribe, no del user.
-                    if (post.User.Photo != null)
+                    if (post.WriterUser.Photo != null)
                     {
-                        this.postsListView.SmallImageList.Images.Add(key: post.UserId.ToString(), image: userImage);
-                        this.postsListView.Items.Add(new ListViewItem(text: post.Text, imageKey: post.User.Id.ToString(), group: group));
+                        Bitmap userPhoto = GetBitMapOfUserPhoto(post.WriterUser);
+                        Image userImage = userPhoto.GetThumbnailImage(50, 50, new Image.GetThumbnailImageAbort(() => false), IntPtr.Zero);
+
+                        this.postsListView.SmallImageList.Images.Add(key: post.WriterUserId.ToString(), image: userImage);
+                        this.postsListView.Items.Add(new ListViewItem(text: post.Text, imageKey: post.WriterUserId.ToString(), group: group));
                     }
                     else
                     {
@@ -114,7 +114,7 @@
         {
             using (PersistenceContext context = this.serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>())
             {
-                foreach (User user in context.Users.Include(u => u.Posts))
+                foreach (User user in context.Users.Include(u => u.OwnerPosts))
                 {
                     if (user.Id == loggedUser.Id)
                     {
@@ -155,7 +155,10 @@
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     image.Save(memoryStream, imageFormat);
-                    user.Photo = memoryStream.ToArray();
+                    byte[] photoAsByteArray = memoryStream.ToArray();
+
+                    user.Photo = photoAsByteArray;
+                    this.loggedUser.Photo = photoAsByteArray;
 
                     context.SaveChanges();
                 }
@@ -189,11 +192,13 @@
                 {
                     DateTime = DateTime.Now,
                     Text = this.commentTextBox.Text,
-                    Writer = this.loggedUser.Name,
-                    UserId = this.currentUser.Id
+                    WriterUserId = this.loggedUser.Id,
+                    OwnerUserId = this.currentUser.Id
                 };
 
                 context.Posts.Add(post);
+
+                this.currentUser.OwnerPosts.Add(post);
 
                 context.SaveChanges();
             }
