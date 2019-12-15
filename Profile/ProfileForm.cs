@@ -185,6 +185,19 @@
 
         private void backButton_Click(object sender, EventArgs e)
         {
+            GoBack();
+        }
+
+        private void GoBack()
+        {
+            if (this.currentUser.Id == this.loggedUser.Id)
+            {
+                // Nothing more to go back.
+                speechSynthesizer.Speak("No se puede retroceder más");
+
+                return;
+            }
+
             this.visitedProfiles.Pop();
             this.SetupForm(this.visitedProfiles.Peek());
         }
@@ -277,6 +290,12 @@
                 {
                     this.nameLabel.Font = new Font(this.nameLabel.Font.Name, this.nameLabel.Font.Size - 2);
                 }
+            }
+
+            IEnumerable<string> backCommands = new List<string>() { "Volver", "Atrás", "Retroceder" };
+            if (backCommands.Any(s => s.Equals(rawText)))
+            {
+                this.GoBack();
             }
         }
     }

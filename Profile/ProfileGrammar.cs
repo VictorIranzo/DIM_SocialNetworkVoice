@@ -20,11 +20,13 @@
             GrammarBuilder navigateUserGrammar = this.CreateNavigateUserGrammar();
             GrammarBuilder hidePhotoGrammar = this.CreateHidePhotoGrammar();
             GrammarBuilder resizeFontGrammar = this.CreateResizeFontGrammar();
+            GrammarBuilder backGrammar = this.CreateBackGrammar();
 
             Choices choices = new Choices();
             choices.Add(navigateUserGrammar);
             choices.Add(hidePhotoGrammar);
             choices.Add(resizeFontGrammar);
+            choices.Add(backGrammar);
 
             Grammar grammar = new Grammar(choices);
 
@@ -104,6 +106,17 @@
             sentence.Append(new GrammarBuilder(alternativesNavigate));
 
             return sentence;
+        }
+
+        private GrammarBuilder CreateBackGrammar()
+        {
+            GrammarBuilder goBack = "Volver";
+            GrammarBuilder back = "Atrás";
+            GrammarBuilder regress = "Retroceder";
+
+            Choices alternativesNavigate = new Choices(goBack, back, regress);
+
+            return alternativesNavigate;
         }
     }
 }
