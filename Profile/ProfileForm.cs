@@ -266,6 +266,18 @@
                 bool photoEnabled = (bool) semantics["photoEnabled"].Value;
                 this.photoBox.Visible = photoEnabled;
             }
+
+            if (semantics.ContainsKey("increaseFontSize"))
+            {
+                if ((bool)semantics["increaseFontSize"].Value)
+                {
+                    this.nameLabel.Font = new Font(this.nameLabel.Font.Name, this.nameLabel.Font.Size + 2);
+                }
+                else
+                {
+                    this.nameLabel.Font = new Font(this.nameLabel.Font.Name, this.nameLabel.Font.Size - 2);
+                }
+            }
         }
     }
 }

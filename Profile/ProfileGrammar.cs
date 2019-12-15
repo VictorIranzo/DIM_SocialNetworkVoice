@@ -19,10 +19,12 @@
         {
             GrammarBuilder navigateUserGrammar = this.CreateNavigateUserGrammar();
             GrammarBuilder hidePhotoGrammar = this.CreateHidePhotoGrammar();
+            GrammarBuilder resizeFontGrammar = this.CreateResizeFontGrammar();
 
             Choices choices = new Choices();
             choices.Add(navigateUserGrammar);
             choices.Add(hidePhotoGrammar);
+            choices.Add(resizeFontGrammar);
 
             Grammar grammar = new Grammar(choices);
 
@@ -74,6 +76,32 @@
 
             GrammarBuilder photo = "foto";
             sentence.Append(photo);
+
+            return sentence;
+        }
+
+        private GrammarBuilder CreateResizeFontGrammar()
+        {
+            Choices optionsChoice = new Choices();
+
+            SemanticResultValue increaseFontResultValue = new SemanticResultValue("Aumentar", value: true);
+            optionsChoice.Add(increaseFontResultValue);
+
+            SemanticResultValue reduceFontResultValue = new SemanticResultValue("Reducir", value: false);
+            optionsChoice.Add(reduceFontResultValue);
+
+            SemanticResultKey optionsResultKey = new SemanticResultKey("increaseFontSize", optionsChoice);
+
+            GrammarBuilder sentence = new GrammarBuilder(optionsResultKey);
+
+            GrammarBuilder letter = "letra";
+            GrammarBuilder font = "fuente";
+            GrammarBuilder letterSize = "tamaño de letra";
+            GrammarBuilder fontSize = "tamaño de fuente";
+
+            Choices alternativesNavigate = new Choices(letter, font, letterSize, fontSize);
+
+            sentence.Append(new GrammarBuilder(alternativesNavigate));
 
             return sentence;
         }
