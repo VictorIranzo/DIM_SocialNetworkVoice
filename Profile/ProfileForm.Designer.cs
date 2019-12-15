@@ -138,6 +138,8 @@
             this.Controls.Add(this.setPhotoButton);
             this.Controls.Add(this.photoBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ProfileForm";
             this.Text = "Perfil";
             ((System.ComponentModel.ISupportInitialize)(this.photoBox)).EndInit();

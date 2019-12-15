@@ -1,5 +1,6 @@
 ﻿namespace REcoSample.Profile
 {
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Persistence;
     using System;
@@ -7,31 +8,34 @@
     using System.Drawing;
     using System.Drawing.Imaging;
     using System.IO;
+    using System.Linq;
     using System.Windows.Forms;
 
     public partial class ProfileForm : Form
     {
         private readonly IServiceProvider serviceProvider;
-        private readonly User currentUser;
+        private readonly User loggedUser;
         private readonly Stack<User> visitedProfiles;
+        private User currentUser;
 
         public ProfileForm(IServiceProvider serviceProvider, User user)
         {
             this.InitializeComponent();
 
             this.serviceProvider = serviceProvider;
-            this.currentUser = user;
+            this.loggedUser = user;
 
             this.visitedProfiles = new Stack<User>();
-            this.visitedProfiles.Push(this.currentUser);
+            this.visitedProfiles.Push(this.loggedUser);
 
             this.LoadFriends();
 
-            this.SetupForm(this.currentUser);
+            this.SetupForm(this.loggedUser);
         }
 
         private void SetupForm(User user)
         {
+            this.currentUser = user;
             this.nameLabel.Text = user.Name;
 
             this.usersListBox.DisplayMember = "Name";
@@ -39,7 +43,7 @@
             this.backButton.Enabled = false;
             this.setPhotoButton.Enabled = true;
 
-            if (user.Id != currentUser.Id)
+            if (user.Id != loggedUser.Id)
             {
                 this.setPhotoButton.Enabled = false;
                 this.backButton.Enabled = true;
@@ -48,11 +52,60 @@
             this.photoBox.Image = null;
             if (user.Photo != null)
             {
-                using (MemoryStream memoryStream = new MemoryStream(user.Photo))
-                {
-                    Bitmap bitMap = new Bitmap(memoryStream, false);
+                Bitmap bitMap = GetBitMapOfUserPhoto(user);
 
-                    this.SetImage(bitMap);
+                this.SetImage(bitMap);
+            }
+
+            this.SetUserPosts();
+        }
+
+        private static Bitmap GetBitMapOfUserPhoto(User user)
+        {
+            Bitmap bitMap;
+
+            using (MemoryStream memoryStream = new MemoryStream(user.Photo))
+            {
+                bitMap = new Bitmap(memoryStream, false);
+            }
+
+            return bitMap;
+        }
+
+        private void SetUserPosts()
+        {
+            this.postsListView.Clear();
+            this.postsListView.View = View.Details;
+            this.postsListView.SmallImageList = new ImageList();
+            this.postsListView.SmallImageList.ImageSize = new Size(50,50);
+            this.postsListView.Columns.Add(text: "Comentario", width: 500);
+
+            if (this.currentUser.Posts == null || !this.currentUser.Posts.Any())
+            {
+                return;
+            }
+
+            using (PersistenceContext context = this.serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>())
+            {
+                foreach (Post post in context.Users.Include(u => u.Posts).FirstOrDefault(u => u.Id == this.currentUser.Id).Posts.OrderByDescending(p => p.DateTime))
+                {
+                    ListViewGroup group = new ListViewGroup(header: $"{post.DateTime.ToShortDateString()} {post.DateTime.ToShortTimeString()}: {post.Writer} escribió:");
+
+                    Bitmap userPhoto = GetBitMapOfUserPhoto(post.User);
+                    Image userImage = userPhoto.GetThumbnailImage(50, 50, new Image.GetThumbnailImageAbort(() => false), IntPtr.Zero);
+
+                    // Aquí es la foto de quién lo escribe, no del user.
+                    if (post.User.Photo != null)
+                    {
+                        this.postsListView.SmallImageList.Images.Add(key: post.UserId.ToString(), image: userImage);
+                        this.postsListView.Items.Add(new ListViewItem(text: post.Text, imageKey: post.User.Id.ToString(), group: group));
+                    }
+                    else
+                    {
+                        this.postsListView.Items.Add(new ListViewItem(text: post.Text, group: group));
+                    }
+
+                    this.postsListView.Groups.Add(group);
                 }
             }
         }
@@ -61,9 +114,9 @@
         {
             using (PersistenceContext context = this.serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>())
             {
-                foreach (User user in context.Users)
+                foreach (User user in context.Users.Include(u => u.Posts))
                 {
-                    if (user.Id == currentUser.Id)
+                    if (user.Id == loggedUser.Id)
                     {
                         continue;
                     }
@@ -97,7 +150,7 @@
 
             using (PersistenceContext context = this.serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>())
             {
-                User user = context.Users.Find(currentUser.Id);
+                User user = context.Users.Find(loggedUser.Id);
 
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
@@ -125,7 +178,29 @@
 
         private void addPostButton_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(this.commentTextBox.Text))
+            {
+                return;
+            }
 
+            using (PersistenceContext context = this.serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>())
+            {
+                Post post = new Post()
+                {
+                    DateTime = DateTime.Now,
+                    Text = this.commentTextBox.Text,
+                    Writer = this.loggedUser.Name,
+                    UserId = this.currentUser.Id
+                };
+
+                context.Posts.Add(post);
+
+                context.SaveChanges();
+            }
+
+            this.commentTextBox.Text = string.Empty;
+
+            this.SetUserPosts();
         }
 
         private void usersListBox_SelectedValueChanged(object sender, EventArgs e)
