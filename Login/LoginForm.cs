@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Persistence;
+    using REcoSample.CreateUser;
     using REcoSample.Profile;
     using System;
     using System.Linq;
@@ -47,7 +48,11 @@
 
         private void createUserButton_Click(object sender, EventArgs e)
         {
+            this.Hide();
 
+            CreateUserForm createUserForm = new CreateUserForm(this.serviceProvider);
+
+            createUserForm.ShowDialog();
         }
     }
 }
