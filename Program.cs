@@ -23,8 +23,8 @@ namespace REcoSample
 
             try
             {
-                Application.Run(new LoginForm(serviceProvider));
-                ////Application.Run(new ProfileForm(serviceProvider, serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>().Users.Include(u => u.OwnerPosts).FirstOrDefault()));
+                ////Application.Run(new LoginForm(serviceProvider));
+                Application.Run(new ProfileForm(serviceProvider, serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>().Users.Include(u => u.OwnerPosts).FirstOrDefault()));
             }
             catch (Exception ex)
             {

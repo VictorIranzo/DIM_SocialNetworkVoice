@@ -37,6 +37,7 @@
             this.commentTextBox = new System.Windows.Forms.RichTextBox();
             this.addPostButton = new System.Windows.Forms.Button();
             this.usersListBox = new System.Windows.Forms.ListBox();
+            this.recognizedText = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.photoBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -123,11 +124,20 @@
             this.usersListBox.TabIndex = 9;
             this.usersListBox.SelectedValueChanged += new System.EventHandler(this.usersListBox_SelectedValueChanged);
             // 
+            // recognizedText
+            // 
+            this.recognizedText.AutoSize = true;
+            this.recognizedText.Location = new System.Drawing.Point(12, 426);
+            this.recognizedText.Name = "recognizedText";
+            this.recognizedText.Size = new System.Drawing.Size(0, 13);
+            this.recognizedText.TabIndex = 10;
+            // 
             // ProfileForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(726, 431);
+            this.ClientSize = new System.Drawing.Size(726, 451);
+            this.Controls.Add(this.recognizedText);
             this.Controls.Add(this.usersListBox);
             this.Controls.Add(this.addPostButton);
             this.Controls.Add(this.commentTextBox);
@@ -142,6 +152,7 @@
             this.MinimizeBox = false;
             this.Name = "ProfileForm";
             this.Text = "Perfil";
+            this.Load += new System.EventHandler(this.ProfileForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.photoBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -159,5 +170,6 @@
         private System.Windows.Forms.RichTextBox commentTextBox;
         private System.Windows.Forms.Button addPostButton;
         private System.Windows.Forms.ListBox usersListBox;
+        private System.Windows.Forms.Label recognizedText;
     }
 }

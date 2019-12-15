@@ -9,6 +9,8 @@
     using System.Drawing.Imaging;
     using System.IO;
     using System.Linq;
+    using System.Speech.Recognition;
+    using System.Speech.Synthesis;
     using System.Windows.Forms;
 
     public partial class ProfileForm : Form
@@ -17,6 +19,10 @@
         private readonly User loggedUser;
         private readonly Stack<User> visitedProfiles;
         private User currentUser;
+        private readonly List<User> allUsers;
+
+        private SpeechRecognitionEngine speechRecognizer = new SpeechRecognitionEngine();
+        private SpeechSynthesizer speechSynthesizer = new SpeechSynthesizer();
 
         public ProfileForm(IServiceProvider serviceProvider, User user)
         {
@@ -26,6 +32,8 @@
             this.loggedUser = user;
 
             this.visitedProfiles = new Stack<User>();
+            this.allUsers = new List<User>();
+
             this.visitedProfiles.Push(this.loggedUser);
 
             this.LoadFriends();
@@ -121,7 +129,8 @@
                         continue;
                     }
 
-                    usersListBox.Items.Add(user);
+                    this.usersListBox.Items.Add(user);
+                    this.allUsers.Add(user);
                 }
             }
         }
@@ -211,9 +220,45 @@
         private void usersListBox_SelectedValueChanged(object sender, EventArgs e)
         {
             User selectedUser = this.usersListBox.SelectedItem as User;
+
+            this.NavigateToUser(selectedUser);
+        }
+
+        private void NavigateToUser(User selectedUser)
+        {
             this.visitedProfiles.Push(selectedUser);
 
             this.SetupForm(selectedUser);
+        }
+
+        private void ProfileForm_Load(object sender, EventArgs e)
+        {
+            Grammar grammar = new ProfileGrammar(this.serviceProvider).CreateGrammar();
+            speechRecognizer.SetInputToDefaultAudioDevice();
+            speechRecognizer.UnloadAllGrammars();
+            speechRecognizer.UpdateRecognizerSetting("CFGConfidenceRejectionThreshold", 60);
+            grammar.Enabled = true;
+            speechRecognizer.LoadGrammar(grammar);
+            speechRecognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(recognizer_SpeechRecognized);
+
+            speechRecognizer.RecognizeAsync(RecognizeMode.Multiple);
+        }
+
+        private void recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+        {
+            SemanticValue semantics = e.Result.Semantics;
+
+            string rawText = e.Result.Text;
+            RecognitionResult result = e.Result;
+
+            speechSynthesizer.Speak(rawText);
+            this.recognizedText.Text = rawText;
+
+            if (semantics.ContainsKey("userIdToNavigate"))
+            {
+                Guid selectedUserId = Guid.Parse(semantics["userIdToNavigate"].Value as string);
+                this.NavigateToUser(this.allUsers.FirstOrDefault(u => u.Id == selectedUserId));
+            }
         }
     }
 }
