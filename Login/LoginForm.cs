@@ -1,8 +1,11 @@
 ﻿namespace REcoSample.Login
 {
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Persistence;
+    using REcoSample.Profile;
     using System;
+    using System.Linq;
     using System.Windows.Forms;
 
     public partial class LoginForm : Form
@@ -21,7 +24,7 @@
 
             using (PersistenceContext context = this.serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>())
             {
-                user = context.Users.FirstOrDefault(u => u.Mail == userTextBox.Text && u.Password == passwordTextBox.Text);
+                user = context.Users.Include(u => u.Posts).FirstOrDefault(u => u.Mail == userTextBox.Text && u.Password == passwordTextBox.Text);
             }
 
             if (user == null)
@@ -31,6 +34,19 @@
                 return;
             }
 
+            this.Hide();
+
+            ProfileForm profileForm = new ProfileForm(this.serviceProvider, user);
+            profileForm.ShowDialog();
+        }
+
+        private void loginButton_Click(object sender, EventArgs e)
+        {
+            this.Login();
+        }
+
+        private void createUserButton_Click(object sender, EventArgs e)
+        {
 
         }
     }

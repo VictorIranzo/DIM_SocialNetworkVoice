@@ -1,8 +1,12 @@
 namespace REcoSample
 {
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
+    using Persistence;
     using REcoSample.Login;
+    using REcoSample.Profile;
     using System;
+    using System.Linq;
     using System.Windows.Forms;
 
     static class Program
@@ -15,13 +19,24 @@ namespace REcoSample
 
             IServiceProvider serviceProvider = BuildServiceProvider();
 
+            CreateDatabase(serviceProvider);
+
             try
             {
-                Application.Run(new LoginForm(serviceProvider));
+                ///Application.Run(new LoginForm(serviceProvider));
+                Application.Run(new ProfileForm(serviceProvider, serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>().Users.FirstOrDefault()));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message + ex.StackTrace);
+            }
+        }
+
+        private static void CreateDatabase(IServiceProvider serviceProvider)
+        {
+            using (PersistenceContext context = serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>())
+            {
+                context.Database.EnsureCreated();
             }
         }
 
@@ -29,7 +44,8 @@ namespace REcoSample
         {
             IServiceCollection serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddDbContext<AppContext>();
+            string databaseConnection = "Data Source=Database.db";
+            serviceCollection.AddDbContext<PersistenceContext>(options => options.UseSqlite(databaseConnection));
 
             return serviceCollection.BuildServiceProvider();
         }

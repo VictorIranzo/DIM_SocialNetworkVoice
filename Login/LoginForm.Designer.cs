@@ -30,7 +30,7 @@
         {
             this.loginButton = new System.Windows.Forms.Button();
             this.passwordTextBox = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.createUserButton = new System.Windows.Forms.Button();
             this.userTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -44,6 +44,7 @@
             this.loginButton.TabIndex = 0;
             this.loginButton.Text = "Iniciar sesión";
             this.loginButton.UseVisualStyleBackColor = true;
+            this.loginButton.Click += new System.EventHandler(this.loginButton_Click);
             // 
             // passwordTextBox
             // 
@@ -53,14 +54,15 @@
             this.passwordTextBox.Size = new System.Drawing.Size(217, 20);
             this.passwordTextBox.TabIndex = 1;
             // 
-            // button1
+            // createUserButton
             // 
-            this.button1.Location = new System.Drawing.Point(100, 68);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(111, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Crear usuario";
-            this.button1.UseVisualStyleBackColor = true;
+            this.createUserButton.Location = new System.Drawing.Point(100, 68);
+            this.createUserButton.Name = "createUserButton";
+            this.createUserButton.Size = new System.Drawing.Size(111, 23);
+            this.createUserButton.TabIndex = 2;
+            this.createUserButton.Text = "Crear usuario";
+            this.createUserButton.UseVisualStyleBackColor = true;
+            this.createUserButton.Click += new System.EventHandler(this.createUserButton_Click);
             // 
             // userTextBox
             // 
@@ -95,7 +97,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.userTextBox);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.createUserButton);
             this.Controls.Add(this.passwordTextBox);
             this.Controls.Add(this.loginButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -112,7 +114,7 @@
 
         private System.Windows.Forms.Button loginButton;
         private System.Windows.Forms.TextBox passwordTextBox;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button createUserButton;
         private System.Windows.Forms.TextBox userTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
