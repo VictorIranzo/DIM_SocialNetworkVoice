@@ -17,10 +17,12 @@
 
         internal Grammar CreateGrammar()
         {
-            GrammarBuilder navigateUser = this.CreateNavigateUserGrammar();
+            GrammarBuilder navigateUserGrammar = this.CreateNavigateUserGrammar();
+            GrammarBuilder hidePhotoGrammar = this.CreateHidePhotoGrammar();
 
             Choices choices = new Choices();
-            choices.Add(navigateUser);
+            choices.Add(navigateUserGrammar);
+            choices.Add(hidePhotoGrammar);
 
             Grammar grammar = new Grammar(choices);
 
@@ -52,6 +54,26 @@
 
             SemanticResultKey userChoiceResultKey = new SemanticResultKey("userIdToNavigate", userChoice);
             sentence.Append(new GrammarBuilder(userChoiceResultKey));
+
+            return sentence;
+        }
+
+        private GrammarBuilder CreateHidePhotoGrammar()
+        {
+            Choices optionsChoice = new Choices();
+
+            SemanticResultValue hidePhotoResultValue = new SemanticResultValue("Ocultar", value: false);
+            optionsChoice.Add(hidePhotoResultValue);
+
+            SemanticResultValue showPhotoResultValue = new SemanticResultValue("Mostrar", value: true);
+            optionsChoice.Add(showPhotoResultValue);
+
+            SemanticResultKey optionsResultKey = new SemanticResultKey("photoEnabled", optionsChoice);
+
+            GrammarBuilder sentence = new GrammarBuilder(optionsResultKey);
+
+            GrammarBuilder photo = "foto";
+            sentence.Append(photo);
 
             return sentence;
         }

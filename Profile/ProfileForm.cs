@@ -35,6 +35,7 @@
             this.allUsers = new List<User>();
 
             this.visitedProfiles.Push(this.loggedUser);
+            this.allUsers.Add(this.loggedUser);
 
             this.LoadFriends();
 
@@ -258,6 +259,12 @@
             {
                 Guid selectedUserId = Guid.Parse(semantics["userIdToNavigate"].Value as string);
                 this.NavigateToUser(this.allUsers.FirstOrDefault(u => u.Id == selectedUserId));
+            }
+
+            if (semantics.ContainsKey("photoEnabled"))
+            {
+                bool photoEnabled = (bool) semantics["photoEnabled"].Value;
+                this.photoBox.Visible = photoEnabled;
             }
         }
     }
