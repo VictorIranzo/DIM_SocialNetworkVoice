@@ -23,8 +23,15 @@ namespace REcoSample
 
             try
             {
+                // Uncomment this code to initialize the application from the Login form.
                 ////Application.Run(new LoginForm(serviceProvider));
-                Application.Run(new ProfileForm(serviceProvider, serviceProvider.CreateScope().ServiceProvider.GetService<PersistenceContext>().Users.Include(u => u.OwnerPosts).FirstOrDefault()));
+
+                // Code to intialize the application with the first user registered.
+                Application.Run(
+                    new ProfileForm(
+                        serviceProvider,
+                        serviceProvider.CreateScope().ServiceProvider
+                            .GetService<PersistenceContext>().Users.Include(u => u.OwnerPosts).FirstOrDefault()));
             }
             catch (Exception ex)
             {
