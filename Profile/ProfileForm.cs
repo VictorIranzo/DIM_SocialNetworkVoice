@@ -23,6 +23,7 @@
 
         private SpeechRecognitionEngine speechRecognizer = new SpeechRecognitionEngine();
         private SpeechSynthesizer speechSynthesizer = new SpeechSynthesizer();
+        private Grammar profileGrammar;
 
         public ProfileForm(IServiceProvider serviceProvider, User user)
         {
@@ -247,12 +248,12 @@
 
         private void ProfileForm_Load(object sender, EventArgs e)
         {
-            Grammar grammar = new ProfileGrammar(this.serviceProvider).CreateGrammar();
+            profileGrammar = new ProfileGrammar(this.serviceProvider).CreateGrammar();
             speechRecognizer.SetInputToDefaultAudioDevice();
             speechRecognizer.UnloadAllGrammars();
             speechRecognizer.UpdateRecognizerSetting("CFGConfidenceRejectionThreshold", 60);
-            grammar.Enabled = true;
-            speechRecognizer.LoadGrammar(grammar);
+            profileGrammar.Enabled = true;
+            speechRecognizer.LoadGrammar(profileGrammar);
             speechRecognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(recognizer_SpeechRecognized);
 
             speechRecognizer.RecognizeAsync(RecognizeMode.Multiple);
@@ -297,6 +298,64 @@
             {
                 this.GoBack();
             }
+
+            if (rawText.Equals("Borrar comentario"))
+            {
+                this.commentTextBox.Text = string.Empty;
+            }
+
+            IEnumerable<string> writeCommands = new List<string>() { "Escribir", "Añadir", "Dictar" };
+            if (writeCommands.Any(s => rawText.Contains(s)))
+            {
+                speechRecognizer.UnloadAllGrammars();
+                speechRecognizer.SpeechRecognized -= new EventHandler<SpeechRecognizedEventArgs>(recognizer_SpeechRecognized);
+
+                speechSynthesizer.Speak("Comienza dictado");
+
+                speechRecognizer.LoadGrammar(new DictationGrammar());
+
+                speechRecognizer.SpeechHypothesized += new EventHandler<SpeechHypothesizedEventArgs>(recognizer_SpeechHypothesized);
+            }
+        }
+
+        private void recognizer_SpeechHypothesized(object sender, SpeechHypothesizedEventArgs e)
+        {
+            if (e.Result.Confidence < 0.6)
+            {
+                return;
+            }
+
+            SemanticValue semantics = e.Result.Semantics;
+            string rawText = e.Result.Text;
+
+            IEnumerable<string> stopDictationCommands = new List<string>() { "fin dictado", "fin", "dictado" };
+            if (stopDictationCommands.Any(s => rawText.Contains(s)))
+            {
+                this.EndDictation();
+
+                return;
+            }
+
+            if (string.IsNullOrEmpty(this.commentTextBox.Text))
+            {
+                this.commentTextBox.Text = rawText;
+            }
+            else
+            {
+                this.commentTextBox.Text += " " + rawText;
+            }
+        }
+
+        private void EndDictation()
+        {
+            speechRecognizer.UnloadAllGrammars();
+            speechRecognizer.SpeechHypothesized -= new EventHandler<SpeechHypothesizedEventArgs>(recognizer_SpeechHypothesized);
+
+            speechSynthesizer.Speak("Fin dictado");
+
+            speechRecognizer.LoadGrammar(profileGrammar);
+
+            speechRecognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(recognizer_SpeechRecognized);
         }
     }
 }

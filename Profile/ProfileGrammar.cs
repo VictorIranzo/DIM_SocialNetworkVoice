@@ -21,12 +21,16 @@
             GrammarBuilder hidePhotoGrammar = this.CreateHidePhotoGrammar();
             GrammarBuilder resizeFontGrammar = this.CreateResizeFontGrammar();
             GrammarBuilder backGrammar = this.CreateBackGrammar();
+            GrammarBuilder addCommentGrammar = this.CreateAddCommentGrammar();
+            GrammarBuilder deleteCommentGrammar = this.CreateDeleteCommentGrammar();
 
             Choices choices = new Choices();
             choices.Add(navigateUserGrammar);
             choices.Add(hidePhotoGrammar);
             choices.Add(resizeFontGrammar);
             choices.Add(backGrammar);
+            choices.Add(addCommentGrammar);
+            choices.Add(deleteCommentGrammar);
 
             Grammar grammar = new Grammar(choices);
 
@@ -134,7 +138,14 @@
 
             sentence.AppendDictation();
 
-            return alternativesNavigate;
+            return sentence;
+        }
+
+        private GrammarBuilder CreateDeleteCommentGrammar()
+        {
+            GrammarBuilder deleteComment = "Borrar comentario";
+
+            return deleteComment;
         }
     }
 }

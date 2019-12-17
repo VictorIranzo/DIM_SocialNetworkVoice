@@ -26,13 +26,15 @@
                 Name = "Paco",
                 Mail = "paco@gmail.com",
                 Password = "1234",
+                Photo = Resource.ImageObama,
             };
 
             User secondUser = new User()
             {
                 Name = "Vicente",
                 Mail = "vicente@gmail.com",
-                Password = "1234"
+                Password = "1234",
+                Photo = Resource.ImageBoris,
             };
 
             modelBuilder.Entity<User>().HasData(
@@ -46,7 +48,14 @@
                     Text = "Hola amigo!",
                     OwnerUserId = firstUser.Id,
                     WriterUserId = secondUser.Id,
-                    DateTime = new DateTime(2019, 12, 12),
+                    DateTime = new DateTime(2019, 12, 12, 19, 15, 0),
+                },
+                new Post()
+                {
+                    Text = "Tenemos que quedar más!",
+                    OwnerUserId = secondUser.Id,
+                    WriterUserId = firstUser.Id,
+                    DateTime = new DateTime(2019, 12, 16, 11, 30, 0),
                 });
         }
     }
